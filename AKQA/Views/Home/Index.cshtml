@@ -1,0 +1,93 @@
+﻿<div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-8">
+        <div class="hpanel">
+            <div class="panel-body">
+                <div class="form-group form-inline">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name">
+                </div>
+                <div class="form-group form-inline">
+                    <label for="amount">Amount:</label>
+                    <input type="number" class="form-control" id="amount">
+                </div>
+                </div>
+            </div>
+            <div class="hpanel">
+                <div class="panel-body">
+                    <div class="form-group form-inline text-center">
+                        <label id="outputName"></label>
+                    </div>
+                    <div class="form-group form-inline text-center">
+                        <label id="outputamount"></label>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="col-md-2">
+    </div>
+</div>
+
+
+@section scripts{
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#amount')
+                .keypress(function (event) {
+                    return isNumber(event, this); //inNumber function is in Site.js which is included in _Layout.cshtml
+                })
+                .change(GetStringValueFromServer);
+            $('#name').change(GetStringValueFromServer);
+        });
+
+        function GetStringValueFromServer() {
+            if ($('#name').val().trim().length == 0) {
+                $('#name').text(" ");
+                $('#outputamount').text(" ");
+                alert("Please input name");
+                return;
+            }
+            if ($('#amount').val().trim().length == 0) {
+                $('#outputamount').text(" ");
+                return;
+            }
+            //USING POST METHOD IN THE JAVASCRIPT CODE
+            $.post("/api/NumberToWordConvertor", { value: $('#amount').val().trim() }) 
+                .done(function (data) {
+                    $('#outputName').text($('#name').val());
+                    $('#outputamount').text(data);
+                })
+                .fail(function () {
+                    alert("Failed to connect to the service");
+                });
+
+            //BELOW IS THE GET IMPLEMENTATION COMMENTED FOR TESTING
+            //$.get("/api/" + $('#amount').val().trim()+"/convert")
+            //    .done(function (data) {
+            //        $('#outputName').text($('#name').val());
+            //        $('#outputamount').text(data);
+            //    })
+            //    .fail(function () {
+            //        alert("Failed to connect to the service");
+            //    });
+        }
+        
+    </script>
+
+ }
+
+@section styles{
+<style>
+    label {
+        min-width : 300px;
+    }
+    .hpanel{
+        margin :10px;
+        border:1px solid;
+        border-color:lightgray;
+        border-radius :4px;
+    }
+</style>
+}
